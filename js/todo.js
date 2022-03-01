@@ -10,14 +10,17 @@ function saveToDos(){
 }
 
 function deleteToDo(event){
-    const li = event.target.parentElement; //parentNode
-    li.remove();
+    const parent = event.target.parentElement; //parentNode
+    parent.remove();
+    toDos = toDos.filter((toDo) => toDo.id !== parseInt(parent.id)); //toDo.id -> 타입:int, li.id -> 타입: string이기 때문에 parseInt를 사용
+    saveToDos();
 }
 
 function paintToDo(newTodo){
     const li = document.createElement("li");
+    li.id = newTodo.id;
     const span = document.createElement("span");
-    span.innerText = newTodo;
+    span.innerText = newTodo.text;
     const button = document.createElement("button");
     button.innerText='❌'
     button.addEventListener("click", deleteToDo);
@@ -30,8 +33,12 @@ function handleToDoSubmit(event){
     event.preventDefault();
     const newTodo = toDoInput.value;
     toDoInput.value = "";
-    toDos.push(newTodo);
-    paintToDo(newTodo);
+    const newTodoObj = { //{} -> 객체 정의 [] -> 배열
+        text: newTodo,
+        id: Date.now(),
+    };
+    toDos.push(newTodoObj);
+    paintToDo(newTodoObj);
     saveToDos();
 }
 
@@ -42,5 +49,5 @@ const savedToDos = localStorage.getItem(TODOS_KEY);
 if(savedToDos !== null){
     const parsedToDos = JSON.parse(savedToDos);
     toDos = parsedToDos;
-    parsedToDos.forEach(paintToDo); //forEach -> for문과 같음 배열 개수만큼 돌아감.
+    parsedToDos.forEach(paintToDo); //forEach -> for문과 같음 배열의 요소마다 실행
 }
